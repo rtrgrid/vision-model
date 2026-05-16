@@ -1,0 +1,222 @@
+:root {
+  --navy: #0a1628;
+  --navy-mid: #142240;
+  --navy-light: #1e3460;
+  --orange: #ED6A2C;
+  --orange-glow: #FF8C42;
+  --coral: #F4845F;
+  --white: #FAFBFC;
+  --gray-100: #F0F2F5;
+  --gray-200: #D8DCE3;
+  --gray-400: #8A92A0;
+  --gray-600: #4A5568;
+  --watercolor-cream: #FFF8F0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--navy);
+  color: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Navigation ── */
+.mag-nav {
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(10,22,40,0.75);
+  border-bottom: 1px solid rgba(237,106,44,0.15);
+}
+.mag-logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+.mag-logo span { color: var(--white); font-weight: 400; }
+
+/* ── Main Content ── */
+.main-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Topic Input ── */
+.topic-input-container {
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+.topic-input-container h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 48px;
+  margin-bottom: 24px;
+}
+.topic-input-container h1 span { color: var(--orange); }
+
+.search-box {
+  display: flex;
+  gap: 12px;
+  background: var(--navy-mid);
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(237,106,44,0.2);
+}
+.search-box input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px 16px;
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+.search-box button {
+  background: var(--orange);
+  color: var(--navy);
+  border: none;
+  padding: 0 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.search-box button:hover { transform: scale(1.05); }
+
+/* ── Canvas ── */
+.canvas-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  aspect-ratio: 16/9;
+  background: var(--watercolor-cream);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+  cursor: crosshair;
+}
+
+.canvas-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.red-ring {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255,0,0,0.7);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+.red-ring::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+}
+
+/* ── Loading States ── */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10,22,40,0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  z-index: 15;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--orange);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Thumbnail Strip ── */
+.thumb-strip {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--navy-mid);
+  padding: 12px 40px;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.thumb-item {
+  width: 80px;
+  height: 45px;
+  background: var(--navy-light);
+  border-radius: 4px;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: 2px solid transparent;
+  overflow: hidden;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gray-400);
+}
+.thumb-item.active {
+  border-color: var(--orange);
+}
+.thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Ripple ── */
+.ripple {
+  position: absolute;
+  border: 2px solid var(--orange);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: ripple-out 0.6s ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+@keyframes ripple-out {
+  from { width: 0; height: 0; opacity: 0.8; }
+  to { width: 100px; height: 100px; opacity: 0; }
+}

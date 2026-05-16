@@ -1,0 +1,49 @@
+# --- Environment & Secrets ---
+.env
+.env.*
+*.local
+secrets.json
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.mypy_cache/
+
+# --- Node / Frontend ---
+node_modules/
+dist/
+dist-ssr/
+*.local
+.eslintcache
+.stylelintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Project Specific (Cache & Logs) ---
+# We ignore generated images and metadata to keep the repo small
+server/static/*.png
+server/static/*.json
+# But we keep the directory structure
+!server/static/.gitkeep
+
+# --- OS Specific ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# --- SAM2 Specific ---
+# Ignore large checkpoints if they were inside the app folder
+*.pt
+*.pth
+checkpoint/

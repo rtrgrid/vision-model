@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pillow
+python-multipart
+requests
+python-dotenv
+huggingface_hub
+google-generativeai
