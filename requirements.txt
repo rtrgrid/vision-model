@@ -1,0 +1,26 @@
+# Backend API
+fastapi
+uvicorn
+python-multipart
+requests
+python-dotenv
+
+# Image Processing
+pillow
+opencv-python
+
+# AI Models & SDKs
+google-generativeai
+google-genai
+huggingface_hub
+
+# Deep Learning (SAM2)
+torch
+torchvision
+numpy
+pyyaml
+pycocotools
+hydra-core
+iopath
+portalocker
+antlr4-python3-runtime
