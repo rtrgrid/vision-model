@@ -9,7 +9,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [ripple, setRipple] = useState(null);
   const [visionModel, setVisionModel] = useState('gemini');
-  const [groundingMode, setGroundingMode] = useState('sam2'); // 'sam2' or 'red_ring'
+  const [groundingMode, setGroundingMode] = useState('red_ring'); // Default to red_ring for Magazine layout
   const [activeTab, setActiveTab] = useState('detected'); // 'detected', 'prompt', 'raw'
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -107,6 +107,7 @@ function App() {
               cursor: 'pointer'
             }}
           >
+            <option value="all">Compare ALL Models</option>
             <option value="gemini">Vision: Gemini 2.5 Pro (Best)</option>
             <option value="qwen">Vision: Qwen2-VL (Grounding)</option>
             <option value="internvl">Vision: InternVL-2 (SOTA)</option>
@@ -220,7 +221,35 @@ function App() {
             )}
           </div>
         )}
-        {currentPage?.metadata && Object.keys(currentPage.metadata).length > 0 && (
+        {currentPage?.isComparison && (
+          <div style={{ marginTop: '20px', width: '100%', maxWidth: '1200px', background: 'rgba(20,34,96,0.3)', borderRadius: '12px', border: '1px solid rgba(237,106,44,0.2)', overflow: 'hidden', padding: '24px' }}>
+            <h2 style={{ fontSize: '24px', fontFamily: 'Playfair Display', marginBottom: '16px', color: 'var(--orange)', textAlign: 'center' }}>Vision Model Comparison</h2>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(10,22,40,0.8)' }}>
+                    <th style={{ padding: '12px', textAlign: 'left', color: 'var(--gray-400)', borderBottom: '1px solid rgba(237,106,44,0.3)' }}>Model</th>
+                    <th style={{ padding: '12px', textAlign: 'left', color: 'var(--gray-400)', borderBottom: '1px solid rgba(237,106,44,0.3)' }}>Object Detected</th>
+                    <th style={{ padding: '12px', textAlign: 'left', color: 'var(--gray-400)', borderBottom: '1px solid rgba(237,106,44,0.3)' }}>Editorial Headline</th>
+                    <th style={{ padding: '12px', textAlign: 'left', color: 'var(--gray-400)', borderBottom: '1px solid rgba(237,106,44,0.3)' }}>Drill Topic (Next Generation)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentPage.results?.map(res => (
+                    <tr key={res.model} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td style={{ padding: '12px', fontWeight: 'bold', color: 'var(--white)' }}>{res.model.toUpperCase()}</td>
+                      <td style={{ padding: '12px', color: 'var(--gray-200)' }}>{res.metadata?.object || res.metadata?.error || 'N/A'}</td>
+                      <td style={{ padding: '12px', color: 'var(--orange)' }}>{res.metadata?.editorial_headline || 'N/A'}</td>
+                      <td style={{ padding: '12px', color: 'var(--gray-200)', fontStyle: 'italic' }}>{res.metadata?.drill_topic || 'N/A'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {!currentPage?.isComparison && currentPage?.metadata && Object.keys(currentPage.metadata).length > 0 && (
           <div style={{ marginTop: '20px', width: '100%', maxWidth: '1000px', background: 'rgba(20,34,96,0.3)', borderRadius: '12px', border: '1px solid rgba(237,106,44,0.2)', overflow: 'hidden' }}>
             <div style={{ display: 'flex', background: 'rgba(10,22,40,0.5)', borderBottom: '1px solid rgba(237,106,44,0.2)' }}>
               {['detected', 'prompt', 'raw'].map(tab => (
@@ -249,14 +278,15 @@ function App() {
               {activeTab === 'detected' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '24px' }}>
                   <div>
-                    <div style={{ fontSize: '10px', color: 'var(--orange)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '8px' }}>Analysis</div>
-                    <h2 style={{ fontSize: '24px', fontFamily: 'Playfair Display', marginBottom: '12px' }}>{currentPage.metadata.object}</h2>
+                    <div style={{ fontSize: '10px', color: 'var(--orange)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '8px' }}>Analysis ({currentPage.groundingMode === 'sam2' ? 'SAM2 Cutout' : 'Red Marker'})</div>
+                    <h2 style={{ fontSize: '24px', fontFamily: 'Playfair Display', marginBottom: '12px', color: 'var(--white)' }}>
+                      {currentPage.metadata.editorial_headline || currentPage.metadata.object}
+                    </h2>
                     <div style={{ fontSize: '14px', color: 'var(--gray-400)', fontStyle: 'italic', marginBottom: '16px' }}>{currentPage.metadata.style}</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {currentPage.metadata.keywords?.map(kw => (
-                        <span key={kw} style={{ fontSize: '10px', background: 'var(--navy-light)', padding: '4px 8px', borderRadius: '4px', color: 'var(--gray-200)' }}>#{kw}</span>
-                      ))}
-                    </div>
+                    
+                    <p style={{ fontSize: '14px', color: 'var(--gray-200)', lineHeight: '1.6', marginBottom: '16px' }}>
+                      {currentPage.metadata.explainer_paragraph}
+                    </p>
                   </div>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -266,14 +296,8 @@ function App() {
                         {currentPage.metadata.materials?.map(m => <li key={m} style={{ marginBottom: '2px' }}>• {m}</li>)}
                       </ul>
                     </div>
-                    <div>
-                      <div style={{ fontSize: '10px', color: 'var(--gray-400)', fontWeight: '700', marginBottom: '4px' }}>DETAILS</div>
-                      <ul style={{ listStyle: 'none', fontSize: '13px' }}>
-                        {currentPage.metadata.details?.map(d => <li key={d} style={{ marginBottom: '2px' }}>• {d}</li>)}
-                      </ul>
-                    </div>
                     <div style={{ gridColumn: 'span 2' }}>
-                      <div style={{ fontSize: '10px', color: 'var(--gray-400)', fontWeight: '700', marginBottom: '4px' }}>DRILLING INTO</div>
+                      <div style={{ fontSize: '10px', color: 'var(--gray-400)', fontWeight: '700', marginBottom: '4px' }}>NEXT GENERATION TOPIC</div>
                       <div style={{ fontSize: '15px', color: 'var(--orange)', fontWeight: '700' }}>{currentPage.metadata.drill_topic}</div>
                     </div>
                   </div>

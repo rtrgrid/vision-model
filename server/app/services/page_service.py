@@ -67,11 +67,49 @@ class PageService:
                 print(f"Grounding with Red Ring: {marked_path}")
 
             # 2. Identify context
-            # We pass segment_path for SAM2 or marked_path for Red Ring
+            grounding_path = segment_path if segment_path else marked_path
+            
+            if vision_model == "all":
+                models_to_test = ["gemini", "qwen", "internvl", "pixtral", "llava_next", "minicpm", "moondream", "llava"]
+                
+                async def run_model(m_key):
+                    try:
+                        res, c_path = await AIService.identify_context(
+                            parent_path, x, y, 
+                            model_key=m_key, 
+                            segment_path=grounding_path
+                        )
+                        return {"model": m_key, "metadata": res.get("metadata", {}), "rawJson": res.get("raw_json", "")}
+                    except Exception as e:
+                        return {"model": m_key, "metadata": {"error": str(e)}, "rawJson": ""}
+
+                tasks = [run_model(m) for m in models_to_test]
+                results = await asyncio.gather(*tasks)
+                
+                result_meta = {
+                    "isComparison": True,
+                    "results": results,
+                    "groundingMode": grounding_mode
+                }
+                
+                # Cleanup grounding images
+                if marked_path and os.path.exists(marked_path):
+                    os.remove(marked_path)
+                if segment_path and os.path.exists(segment_path):
+                    os.remove(segment_path)
+                    
+                # Return immediately without generating a new image
+                return {
+                    "id": page_id, 
+                    "imageUrl": f"/static/{parent_id}.png",
+                    **result_meta
+                }
+            
+            # Normal single model execution
             vision_result, crop_path = await AIService.identify_context(
                 parent_path, x, y, 
                 model_key=vision_model, 
-                segment_path=segment_path if segment_path else marked_path
+                segment_path=grounding_path
             )
             
             drill_topic = vision_result.get("drill_topic", "a detailed sub-component")

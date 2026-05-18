@@ -29,25 +29,19 @@ class AIService:
     
     HF_IMAGE_MODEL = "stabilityai/stable-diffusion-xl-base-1.0"
 
-    # Restored Detailed Prompt
+    # Magazine Variant Prompt
     STRUCTURED_PROMPT = (
-        "You are a visual grounding and semantic extraction system.\n\n"
-        "Analyze the highlighted/cropped object carefully.\n\n"
-        "Return a detailed structured description including:\n\n"
+        "You are an expert editorial art director and technical analyst.\n\n"
+        "Analyze the area highlighted by the red marker carefully. Keep the surrounding scene in mind for context.\n\n"
+        "Return a detailed structured description designed for a magazine layout including:\n\n"
         "1. Primary object category\n"
-        "2. Visual appearance\n"
-        "3. Materials\n"
-        "4. Colors\n"
-        "5. Style/aesthetic\n"
-        "6. Notable design details\n"
-        "7. Possible use/context\n"
-        "8. Adjacent contextual clues from surrounding scene\n"
-        "9. Keywords suitable for recursive exploration\n"
-        "10. A concise educational/product drill-down topic\n\n"
-        "Focus ONLY on the highlighted object.\n\n"
-        "Be visually precise and avoid hallucinating brands unless clearly visible.\n\n"
-        "Output MUST be in raw JSON format matching this schema:\n"
-        "{\"object\": \"name\", \"materials\": [], \"colors\": [], \"style\": \"string\", \"details\": [], \"context\": \"string\", \"keywords\": [], \"drill_topic\": \"string\"}"
+        "2. Materials and Colors\n"
+        "3. Style/aesthetic\n"
+        "4. A short, captivating 'editorial_headline' (max 6 words)\n"
+        "5. An 'explainer_paragraph' (2-3 sentences, elegantly written, explaining the function or history of the specific detail highlighted)\n"
+        "6. A highly descriptive 'drill_topic' (used as an image generation prompt for a macro-zoom into the object)\n\n"
+        "Output MUST be in raw JSON format matching this schema exactly:\n"
+        "{\"object\": \"string\", \"materials\": [\"string\"], \"style\": \"string\", \"editorial_headline\": \"string\", \"explainer_paragraph\": \"string\", \"drill_topic\": \"string\"}"
     )
 
     @classmethod
@@ -56,7 +50,8 @@ class AIService:
         Generates an image using Google Imagen with HF fallback.
         """
         loop = asyncio.get_event_loop()
-        enhanced_prompt = f"A professional, hyper-detailed macro close-up of {prompt}. 8k resolution, cinematic lighting, masterpiece, photorealistic."
+        # Enforce Magazine Watercolor Style
+        enhanced_prompt = f"A delicate, pale watercolor illustration of {prompt}. 16:9 aspect ratio, painted on textured cream paper, soft pastel tones, artistic, editorial magazine style, highly detailed but painted, no photorealism."
         
         def run_imagen_logic():
             # Try Primary

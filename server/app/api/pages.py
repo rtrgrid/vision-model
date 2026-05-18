@@ -16,7 +16,7 @@ class PageRequest(BaseModel):
     x: Optional[float] = None
     y: Optional[float] = None
     visionModel: Optional[str] = "gemini"
-    groundingMode: Optional[str] = "sam2" # "sam2" or "red_ring"
+    groundingMode: Optional[str] = "red_ring" # Default to Red Marker Workflow
 
 @router.post("/page")
 async def get_page(req: PageRequest):
