@@ -27,7 +27,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # --- Project Specific (Cache & Logs) ---
-# We ignore generated images and metadata to keep the repo small
+rough work/
+static/
 server/static/*.png
 server/static/*.json
 # But we keep the directory structure
