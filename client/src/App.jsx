@@ -120,13 +120,15 @@ function App() {
     setAnalyzingId(targetPage.id);
     
     try {
-      const analysis = await analyzePage(targetPage.id, visionModel);
+      const result = await analyzePage(targetPage.id, visionModel);
       setPages(prev => {
         return prev.map(p => {
           if (p.id === targetPage.id) {
+            // Merge metadata and set rawJson from the backend result
             return {
               ...p,
-              metadata: { ...p.metadata, ...analysis }
+              metadata: { ...p.metadata, ...(result.metadata || {}) },
+              rawJson: result.rawJson || p.rawJson
             };
           }
           return p;
